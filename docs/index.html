@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>单通道语音增强 · 方法对比</title>
+<style>
+  :root{
+    --ink:#1f2430; --soft:#4a5164; --muted:#7a8194;
+    --line:#e2e5ec; --bg:#fbfbfd; --card:#ffffff;
+    --accent:#2e3a6b; --teal:#0f6e56; --amber:#8a5a0b;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:0 20px 80px;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.75;
+  }
+  .wrap{max-width:880px; margin:0 auto}
+  header{padding:56px 0 28px; border-bottom:2px solid var(--accent)}
+  h1{margin:0 0 10px; font-size:28px; color:var(--accent); letter-spacing:-.3px}
+  .sub{color:var(--soft); font-size:15px; margin:0}
+  .meta{margin-top:18px; font-size:13.5px; color:var(--muted)}
+  .meta code{background:#eef0f5; padding:2px 6px; border-radius:4px; font-size:12.5px}
+  h2{font-size:19px; margin:44px 0 6px; color:var(--accent)}
+  .lead{color:var(--soft); font-size:14.5px; margin:0 0 20px}
+
+  .row{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; margin-bottom:12px;
+  }
+  .row.best{border-color:var(--teal); border-width:1.5px}
+  .row.oracle{background:#f6f7fa; border-style:dashed}
+  .top{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+  .name{font-weight:600; font-size:16px}
+  .year{color:var(--muted); font-size:13px}
+  .snr{margin-left:auto; font-variant-numeric:tabular-nums; font-size:15px; font-weight:600}
+  .up{color:var(--teal); font-size:13px; font-weight:500; margin-left:6px}
+  .note{color:var(--soft); font-size:13.5px; margin:6px 0 10px}
+  .note b{color:var(--amber)}
+  audio{width:100%; height:38px; margin-top:4px}
+
+  figure{margin:28px 0}
+  figure img{width:100%; border:1px solid var(--line); border-radius:8px; display:block}
+  figcaption{color:var(--muted); font-size:13px; margin-top:8px}
+
+  .tips{background:#eef0f7; border-left:3px solid var(--accent);
+        padding:14px 18px; border-radius:0 8px 8px 0; margin:24px 0; font-size:14px}
+  .tips ol{margin:8px 0 0; padding-left:20px}
+  .tips li{margin-bottom:5px; color:var(--soft)}
+
+  footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--line);
+         font-size:13.5px; color:var(--muted)}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>单通道语音增强 · 方法对比</h1>
+  <p class="sub">从 1979 年的谱减法到 2001 年的 OM-LSA，全部算法手写实现</p>
+  <p class="meta">
+    测试条件：自录真实语音（13&nbsp;s，基频约 109&nbsp;Hz），加<b>粉噪声</b>至 <b>5&nbsp;dB SNR</b>。
+    STFT <code>25 ms / 10 ms / 512</code>。
+    <br>源码与说明见 <a href="https://github.com/Nikson-21/speech-enhancement">GitHub 仓库</a>。
+  </p>
+</header>
+
+<h2>试听对比</h2>
+<p class="lead">建议戴耳机，按顺序听。SNR 只是参考——它们真正的差别在听感。</p>
+
+<div class="row">
+  <div class="top"><span class="name">带噪输入</span><span class="year">粉噪声 @ 5 dB</span>
+    <span class="snr">5.00 dB</span></div>
+  <p class="note">未经处理，作为基准。</p>
+  <audio controls preload="none" src="audio/0_noisy.wav"></audio>
+</div>
+
+<div class="row">
+  <div class="top"><span class="name">谱减法</span><span class="year">Boll 1979</span>
+    <span class="snr">6.58 dB<span class="up">+1.58</span></span></div>
+  <p class="note"><b>重点听：忽隐忽现、像水滴或小鸟叫的杂音。</b>
+     这就是「音乐噪声」——纯噪声区的功率随机波动，波动到高于均值的时频点被保留下来，
+     形成孤立的窄带音。根源是「用随机量去减随机量，再做硬判决」。</p>
+  <audio controls preload="none" src="audio/1_spectral_subtraction.wav"></audio>
+</div>
+
+<div class="row">
+  <div class="top"><span class="name">维纳滤波 + 判决引导</span><span class="year">Ephraim &amp; Malah 1984</span>
+    <span class="snr">8.41 dB<span class="up">+3.41</span></span></div>
+  <p class="note">用上一帧的输出估计先验信噪比（α = 0.98），引入时间平滑后<b>水滴声基本消失</b>。
+     代价是对语音起始的反应变慢。</p>
+  <audio controls preload="none" src="audio/2_Wiener.wav"></audio>
+</div>
+
+<div class="row">
+  <div class="top"><span class="name">MMSE-STSA</span><span class="year">Ephraim &amp; Malah 1984</span>
+    <span class="snr">7.91 dB<span class="up">+2.91</span></span></div>
+  <p class="note">在<b>幅度域</b>做贝叶斯 MMSE 估计，增益含修正贝塞尔函数。</p>
+  <audio controls preload="none" src="audio/3_MMSE-STSA.wav"></audio>
+</div>
+
+<div class="row">
+  <div class="top"><span class="name">MMSE-LSA</span><span class="year">Ephraim &amp; Malah 1985</span>
+    <span class="snr">8.28 dB<span class="up">+3.28</span></span></div>
+  <p class="note">改到<b>对数幅度域</b>。幅度域对「低估一半」的惩罚只有「高估一倍」的 1/4，
+     天然倾向过度压制；对数域对两者惩罚相同，且贴近人耳的对数响度感知。
+     <b>低信噪比处对弱语音「手下留情」</b>。</p>
+  <audio controls preload="none" src="audio/4_MMSE-LSA.wav"></audio>
+</div>
+
+<div class="row best">
+  <div class="top"><span class="name">OM-LSA</span><span class="year">Cohen 2001 · 传统方法最优</span>
+    <span class="snr">8.46 dB<span class="up">+3.46</span></span></div>
+  <p class="note">引入二状态模型与语音存在概率 <i>p</i>，按 <i>G</i><sub>LSA</sub><sup>p</sup> ·
+     <i>G</i><sub>min</sub><sup>1−p</sup> 加权。承认「大部分时频点根本没有语音」这一事实。
+     <b>残留噪声最平顺自然</b>。</p>
+  <audio controls preload="none" src="audio/5_OM-LSA.wav"></audio>
+</div>
+
+<div class="row oracle">
+  <div class="top"><span class="name">IRM 理想掩蔽</span><span class="year">oracle · 性能上限</span>
+    <span class="snr">13.93 dB<span class="up">+8.93</span></span></div>
+  <p class="note">计算 IRM 需要干净语音，现实中不可得。故意「作弊」算出来，
+     是为了<b>测出这套框架的天花板</b>——距离它还有 5.5 dB，这就是数据驱动方法的空间。</p>
+  <audio controls preload="none" src="audio/6_IRM_oracle.wav"></audio>
+</div>
+
+<div class="tips">
+  <b>听的时候关注这三处</b>（客观指标都体现不出来）：
+  <ol>
+    <li><b>摩擦音</b>（/s/ /sh/ /f/）有没有被削掉——它们本身就是宽带噪声，最容易被误压</li>
+    <li><b>词的开头</b>是否完整——时间平滑会让算法对语音起始反应变慢</li>
+    <li><b>残留噪声的质感</b>——是平顺的底噪，还是抖动的、有色彩的杂音</li>
+  </ol>
+</div>
+
+<h2>语谱图对比</h2>
+<figure>
+  <img src="figures/spectrograms_comparison.png" alt="各方法语谱图对比">
+  <figcaption>谱减法的背景可见明显的孤立亮点（音乐噪声的视觉签名）；
+    OM-LSA 的残留噪声分布均匀。3–8 kHz 的竖向亮块是摩擦音，
+    对比它们在各方法中被保留了多少。</figcaption>
+</figure>
+
+<h2>主线：假设的逐层剥离</h2>
+<p class="lead">
+  这个项目的主轴不是「实现了哪些算法」，而是：
+  <b>每削弱一个假设，需要付出什么代价</b>。
+  谱减法假设逐时频点独立判决 → 音乐噪声；
+  判决引导用一帧的记忆换掉它 → 噪声一变化即失效；
+  最小值统计用 60 帧历史换掉「噪声恒定」→ 引入约等于窗长的跟踪滞后；
+  OM-LSA 承认语音稀疏 → 但 q 的估计仍是启发式。
+  <b>没有免费的午餐。</b>
+</p>
+
+<footer>
+  源码、推导说明与三个调试踩坑记录：
+  <a href="https://github.com/Nikson-21/speech-enhancement">github.com/Nikson-21/speech-enhancement</a>
+</footer>
+
+</div>
+</body>
+</html>
