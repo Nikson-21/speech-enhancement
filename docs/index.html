@@ -52,19 +52,35 @@
   footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--line);
          font-size:13.5px; color:var(--muted)}
   a{color:var(--accent)}
+  .center {
+  text-align: center;
+}
+  h1.center {
+  font-size: 2.4rem;
+  letter-spacing: 1px;    /* 中文标题拉开一点更有气势 */
+}
+
+p.center {
+  font-size: 1.15rem;
+  color: #333;            /* .sub 现在偏灰，作者名可以深一点 */
+  margin-top: 14px;       /* 和标题拉开距离 */
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  
 <header>
-  <h1>单通道语音增强 · 方法对比</h1>
-  <p class="sub">从 1979 年的谱减法到 2001 年的 OM-LSA，全部算法手写实现</p>
+  <h1 class="center">单通道语音增强 · 传统方法迭代对比</h1>
+  <p class="sub center">柳若是</p>
+  <p class="sub">从 1979 年的谱减法到 2001 年的 OM-LSA</p>
   <p class="meta">
     测试条件：自录真实语音（13&nbsp;s，基频约 109&nbsp;Hz），加<b>粉噪声</b>至 <b>5&nbsp;dB SNR</b>。
     STFT <code>25 ms / 10 ms / 512</code>。
     <br>源码与说明见 <a href="https://github.com/Nikson-21/speech-enhancement">GitHub 仓库</a>。
   </p>
+  
 </header>
 
 <h2>试听对比</h2>
