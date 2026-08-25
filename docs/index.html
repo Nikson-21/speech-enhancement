@@ -87,15 +87,15 @@ p.center {
 <p class="lead">建议戴耳机，按顺序听。SNR 只是参考——它们真正的差别在听感。</p>
 
 <div class="row">
-  <div class="top"><span class="name">带噪输入</span><span class="year">粉噪声 @ 5 dB</span>
-    <span class="snr">5.00 dB</span></div>
+  <div class="top"><span class="name">带噪输入</span><span class="year">白噪声 @ 0.2 dB</span>
+    <span class="snr">0.2 dB</span></div>
   <p class="note">未经处理，作为基准。</p>
   <audio controls preload="none" src="audio/0_noisy.wav"></audio>
 </div>
 
 <div class="row">
   <div class="top"><span class="name">谱减法</span><span class="year">Boll 1979</span>
-    <span class="snr">6.58 dB<span class="up">+1.58</span></span></div>
+    <span class="snr">2.81 dB<span class="up">+2.61</span></span></div>
   <p class="note"><b>重点听：忽隐忽现、像水滴或小鸟叫的杂音。</b>
      这就是「音乐噪声」——纯噪声区的功率随机波动，波动到高于均值的时频点被保留下来，
      形成孤立的窄带音。根源是「用随机量去减随机量，再做硬判决」。</p>
@@ -104,7 +104,7 @@ p.center {
 
 <div class="row">
   <div class="top"><span class="name">维纳滤波 + 判决引导</span><span class="year">Ephraim &amp; Malah 1984</span>
-    <span class="snr">8.41 dB<span class="up">+3.41</span></span></div>
+    <span class="snr">8.41 dB<span class="up">+8.21</span></span></div>
   <p class="note">用上一帧的输出估计先验信噪比（α = 0.98），引入时间平滑后<b>水滴声基本消失</b>。
      代价是对语音起始的反应变慢。</p>
   <audio controls preload="none" src="audio/2_Wiener.wav"></audio>
@@ -112,14 +112,14 @@ p.center {
 
 <div class="row">
   <div class="top"><span class="name">MMSE-STSA</span><span class="year">Ephraim &amp; Malah 1984</span>
-    <span class="snr">7.91 dB<span class="up">+2.91</span></span></div>
+    <span class="snr">6.11 dB<span class="up">+5.91</span></span></div>
   <p class="note">在<b>幅度域</b>做贝叶斯 MMSE 估计，增益含修正贝塞尔函数。</p>
   <audio controls preload="none" src="audio/3_MMSE-STSA.wav"></audio>
 </div>
 
 <div class="row">
   <div class="top"><span class="name">MMSE-LSA</span><span class="year">Ephraim &amp; Malah 1985</span>
-    <span class="snr">8.28 dB<span class="up">+3.28</span></span></div>
+    <span class="snr">7.76 dB<span class="up">+7.56</span></span></div>
   <p class="note">改到<b>对数幅度域</b>。幅度域对「低估一半」的惩罚只有「高估一倍」的 1/4，
      天然倾向过度压制；对数域对两者惩罚相同，且贴近人耳的对数响度感知。
      <b>低信噪比处对弱语音「手下留情」</b>。</p>
@@ -128,7 +128,7 @@ p.center {
 
 <div class="row best">
   <div class="top"><span class="name">OM-LSA</span><span class="year">Cohen 2001 · 传统方法最优</span>
-    <span class="snr">8.46 dB<span class="up">+3.46</span></span></div>
+    <span class="snr">8.43 dB<span class="up">+8.23</span></span></div>
   <p class="note">引入二状态模型与语音存在概率 <i>p</i>，按 <i>G</i><sub>LSA</sub><sup>p</sup> ·
      <i>G</i><sub>min</sub><sup>1−p</sup> 加权。承认「大部分时频点根本没有语音」这一事实。
      <b>残留噪声最平顺自然</b>。</p>
@@ -137,7 +137,7 @@ p.center {
 
 <div class="row oracle">
   <div class="top"><span class="name">IRM 理想掩蔽</span><span class="year">oracle · 性能上限</span>
-    <span class="snr">13.93 dB<span class="up">+8.93</span></span></div>
+    <span class="snr">12.46 dB<span class="up">+12.26</span></span></div>
   <p class="note">计算 IRM 需要干净语音，现实中不可得。故意「作弊」算出来，
      是为了<b>测出这套框架的天花板</b>——距离它还有 5.5 dB，这就是数据驱动方法的空间。</p>
   <audio controls preload="none" src="audio/6_IRM_oracle.wav"></audio>
